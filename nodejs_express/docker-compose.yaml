@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=sunny
+      - POSTGRES_PASSWORD=sunny
+      - POSTGRES_DB=sunny
+    volumes:
+      - ./do-an.sql:/docker-entrypoint-initdb.d/do-an-db.sql
+    ports:
+      - 5432:5432
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
