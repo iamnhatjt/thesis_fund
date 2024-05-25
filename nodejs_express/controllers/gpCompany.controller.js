@@ -11,7 +11,7 @@ const getAllGpCompany = (req, res) => {
       where: {
         ...(!isAdminRole &&
           req?.userInfo?.email && {
-            "$Accounts.lastName": req?.userInfo?.email,
+            "$Accounts.email$": req?.userInfo?.email,
           }),
         name: {
           [db.Sequelize.Op.like]: `%${req?.query?.searchText ?? ""}%`,
@@ -116,7 +116,7 @@ const getStatusCompany = async (req, res) => {
     } else {
       totalCompany = await gpCompany.count({
         where: {
-          "$Accounts.email": req?.userInfo?.email,
+          "$Accounts.email$": req?.userInfo?.email,
           "Accounts.role": "admin",
         },
       });

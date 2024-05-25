@@ -27,7 +27,7 @@ const createDoc = async (req, res) => {
   try {
     const { description, fileName } = req.body;
     const gpId = req.params?.gpId;
-    const isOwner = isOwnerGP(req?.userInfo?.id, gpId);
+    const isOwner = await isOwnerGP(req?.userInfo?.id, gpId);
 
     if (!isOwner) {
       throw new Error("should be owner of gp to do this...");
@@ -106,10 +106,51 @@ const docFile = async (req, res) => {
   }
 };
 
+const updateDoc = async (req, res) => {
+  try {
+    const userId = req?.userInfo?.id;
+    const docDb = await db.DocGP.findByPk(req.params.docId);
+    const isOwner = await isOwnerGP(userId, docDb.GpCompanyId);
+    if (!isOwner) {
+      throw new Error("should be owner of gp to do this...");
+    }
+    await docDb.update(req.body);
+    res.json(
+      responseApi.success({
+        data: docDb,
+      })
+    );
+  } catch (err) {
+    res.status(500).json(responseApi.error({ message: err.message }));
+  }
+};
+
+const deleteDoc = async (req, res) => {
+  try {
+    const userId = req?.userInfo?.docId;
+    const docDb = await db.DocGP.findByPk(req.params.docId);
+    const driver = await driverConfig();
+
+    const isOwner = await isOwnerGP(userId, docDb.GpCompanyId);
+    if (!isOwner) {
+      throw new Error("should be owner of gp to do this...");
+    }
+    driver.files.delete({
+      fileId: docDb.doc,
+    });
+    await docDb.destroy();
+    res.json(responseApi.success({}));
+  } catch (err) {
+    res.status(500).json(responseApi.error({ message: err.message }));
+  }
+};
+
 const docController = {
   getAllDocs,
   createDoc,
   docFile,
+  updateDoc,
+  deleteDoc,
 };
 
 module.exports = docController;

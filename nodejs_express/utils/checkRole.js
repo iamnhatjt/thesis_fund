@@ -22,7 +22,15 @@ const isOwnerFund = async (fundId, userId) => {
 };
 
 const isOwnerGP = async (gpId, userId) => {
-  //todo: check here
+  const check = await db.GPCompanyAccount.where({
+    GpCompanyId: gpId,
+    AccountId: userId,
+    role: "admin",
+  });
+  if (!check) {
+    throw Error("You are not allowed to do this");
+  }
+
   return true;
 };
 

@@ -10,7 +10,7 @@ router.post(
   middleware.checkToken,
   accountController.changePassword,
 );
-router.patch("/update/:id", accountController.updateAccount);
+router.patch("/me", middleware.checkToken, accountController.updateAccount);
 router.delete("/delete/:id", accountController.deleteAccount);
 router.get("/:id", accountController.getAccountById);
 

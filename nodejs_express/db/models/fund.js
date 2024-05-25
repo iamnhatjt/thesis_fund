@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         through: models.FundAccount,
       });
       Fund.hasMany(models.FundAccount);
+      Fund.hasMany(models.docFund);
     }
   }
   Fund.init(

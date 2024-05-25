@@ -2,129 +2,129 @@ const bcrypt = require("bcrypt");
 const db = require("../db/models");
 const responseApi = require("../config/responseApi");
 const jwt = require("jsonwebtoken");
-const { sendEmail } = require("../config/configNodeMailer");
+const {sendEmail} = require("../config/configNodeMailer");
 
 const signUp = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const normalizedEmail = email.toLowerCase().trim();
+    try {
+        const {email, password} = req.body;
+        const normalizedEmail = email.toLowerCase().trim();
 
-    const user = await db.Account.findOne({
-      where: { email: normalizedEmail },
-    });
+        const user = await db.Account.findOne({
+            where: {email: normalizedEmail},
+        });
 
-    if (user) {
-      return res
-        .status(400)
-        .json(
-          responseApi.error({ message: "Email already exists", code: 400 }),
+        if (user) {
+            return res
+                .status(400)
+                .json(
+                    responseApi.error({message: "Email already exists", code: 400}),
+                );
+        }
+
+        const hashPassword = bcrypt.hashSync(
+            password,
+            parseInt(process.env.BCRYPT_ROUNDS),
         );
+
+        const createdAccount = await db.Account.create({
+            ...req.body,
+            password: hashPassword,
+        });
+
+        return res.json(responseApi.success({data: createdAccount}));
+    } catch (err) {
+        return res.status(500).json(responseApi.error({message: err.message}));
     }
-
-    const hashPassword = bcrypt.hashSync(
-      password,
-      parseInt(process.env.BCRYPT_ROUNDS),
-    );
-
-    const createdAccount = await db.Account.create({
-      ...req.body,
-      password: hashPassword,
-    });
-
-    return res.json(responseApi.success({ data: createdAccount }));
-  } catch (err) {
-    return res.status(500).json(responseApi.error({ message: err.message }));
-  }
 };
 
 const signIn = async (req, res) => {
-  const email = req.body.email.toLowerCase().trim();
-  db.Account.findOne({
-    where: {
-      email: email,
-    },
-  })
-    .then(async (data) => {
-      if (!data) {
-        res.status(400).json(responseApi.error("Email not found"));
-      } else {
-        const check = bcrypt.compareSync(req.body.password, data.password);
-        if (check) {
-          const token = jwt.sign(data.toJSON(), process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES_IN,
-          });
-          res.json(
-            responseApi.success({
-              data: { ...data.toJSON(), tokenAccess: token },
-            }),
-          );
-        } else {
-          throw Error("Password incorrect");
-        }
-      }
+    const email = req.body.email.toLowerCase().trim();
+    db.Account.findOne({
+        where: {
+            email: email,
+        },
     })
-    .catch((err) => {
-      res.status(500).json(responseApi.error({ message: err.message }));
-    });
+        .then(async (data) => {
+            if (!data) {
+                res.status(400).json(responseApi.error("Email not found"));
+            } else {
+                const check = bcrypt.compareSync(req.body.password, data.password);
+                if (check) {
+                    const token = jwt.sign(data.toJSON(), process.env.JWT_SECRET, {
+                        expiresIn: process.env.JWT_EXPIRES_IN,
+                    });
+                    res.json(
+                        responseApi.success({
+                            data: {...data.toJSON(), tokenAccess: token},
+                        }),
+                    );
+                } else {
+                    throw Error("Password incorrect");
+                }
+            }
+        })
+        .catch((err) => {
+            res.status(500).json(responseApi.error({message: err.message}));
+        });
 };
 
 const forgotPassword = async (req, res) => {
-  try {
-    const emailUser = req.body.email;
-    const user = await db.Account.findOne({
-      where: {
-        email: emailUser,
-      },
-    });
-    if (!user) {
-      throw Error("Email not found");
-    }
+    try {
+        const emailUser = req.body.email;
+        const user = await db.Account.findOne({
+            where: {
+                email: emailUser,
+            },
+        });
+        if (!user) {
+            throw Error("Email not found");
+        }
 
-    await sendEmail({
-      subject: "QUỸ ĐẦU TƯ - MAKE BY SUNNY TRINH",
-      text: `Xin chào ${emailUser}, Mời bạn click vào button phía dưới để cài đặt mật khẩu.`,
-      to: emailUser,
-      from: process.env.EMAIL,
-      html: layoutEmail(
-        `${process.env.URL_FRONTEND}/resetPassword?token=${user.password}`,
-      ),
-    });
-    return res.json(responseApi.success({ message: "Email sent" }));
-  } catch (err) {
-    return res.status(500).json(responseApi.error({ message: err.message }));
-  }
+        await sendEmail({
+            subject: "QUỸ ĐẦU TƯ - MAKE BY SUNNY TRINH",
+            text: `Xin chào ${emailUser}, Mời bạn click vào button phía dưới để cài đặt mật khẩu.`,
+            to: emailUser,
+            from: process.env.EMAIL,
+            html: layoutEmail(
+                `${process.env.URL_FRONTEND}/resetPassword?token=${user.password}`,
+            ),
+        });
+        return res.json(responseApi.success({message: "Email sent"}));
+    } catch (err) {
+        return res.status(500).json(responseApi.error({message: err.message}));
+    }
 };
 
 const resetPassword = async (req, res) => {
-  try {
-    const token = req.body.token;
-    const user = await db.Account.findOne({
-      where: {
-        password: token,
-      },
-    });
-    if (!user) {
-      throw Error("Token not found");
-    }
+    try {
+        const token = req.body.token;
+        const user = await db.Account.findOne({
+            where: {
+                password: token,
+            },
+        });
+        if (!user) {
+            throw Error("Token not found");
+        }
 
-    const hashPassword = bcrypt.hashSync(
-      req.body.password,
-      parseInt(process.env.BCRYPT_ROUNDS),
-    );
-    await user.update({
-      password: hashPassword,
-    });
-    res.json(responseApi.success({ message: "Password reset successfully" }));
-  } catch (err) {
-    res.status(500).json(responseApi.error({ message: err.message }));
-  }
+        const hashPassword = bcrypt.hashSync(
+            req.body.password,
+            parseInt(process.env.BCRYPT_ROUNDS),
+        );
+        await user.update({
+            password: hashPassword,
+        });
+        res.json(responseApi.success({message: "Password reset successfully"}));
+    } catch (err) {
+        res.status(500).json(responseApi.error({message: err.message}));
+    }
 };
 
 const authController = {
-  signUp,
-  signIn,
-  forgotPassword,
-  resetPassword,
+    signUp,
+    signIn,
+    forgotPassword,
+    resetPassword,
 };
 
 module.exports = authController;
@@ -149,7 +149,6 @@ const layoutEmail = (url) => `
     img{border:0; height:auto; line-height:100%; outline:none; text-decoration:none;}
     table{border-collapse:collapse !important;}
     body{height:100% !important; margin:0; padding:0; width:100% !important;}
-
     /* iOS BLUE LINKS */
     .appleBody a {color:#68440a; text-decoration: none;}
     .appleFooter a {color:#999999; text-decoration: none;}

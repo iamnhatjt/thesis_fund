@@ -18,20 +18,21 @@ const getAllAccount = (req, res) =>
       res.status(500).json(responseApi.error({ logError: err }));
     });
 
-const updateAccount = (req, res) =>
-  Account.update(req.body, {
-    where: { id: req.params.id },
-    returning: true,
+const updateAccount = async (req, res) => {
+  const userInfo = req.userInfo;
+
+  await Account.update(req.body, {
+    where: { id: userInfo.id },
   })
     .then((data) => {
-      res.json(responseApi.success({ data: data[1] }));
+      res.json(responseApi.success({ data: data }));
     })
     .catch((err) =>
       res
         .status(500)
-        .json(responseApi.error({ logError: err, message: err.message }))
+        .json(responseApi.error({ logError: err, message: err.message })),
     );
-
+};
 const deleteAccount = (req, res) =>
   Account.destroy({ where: { id: req.params.id } })
     .then((data) => res.json(responseApi.success({ data: data })))
@@ -40,8 +41,8 @@ const deleteAccount = (req, res) =>
         responseApi.error({
           logError: err,
           message: err.message,
-        })
-      )
+        }),
+      ),
     );
 
 const getAccountById = (req, res) => {
@@ -51,14 +52,14 @@ const getAccountById = (req, res) => {
         res.json(
           responseApi.success({
             data: data,
-          })
+          }),
         );
       } else {
         res.status(404).json(
           responseApi.error({
             message: "Data not found",
             code: 404,
-          })
+          }),
         );
       }
     })
@@ -67,8 +68,8 @@ const getAccountById = (req, res) => {
         responseApi.error({
           logError: err,
           message: err.message,
-        })
-      )
+        }),
+      ),
     );
 };
 
@@ -91,14 +92,14 @@ const changePassword = async (req, res) => {
     }
     const hashPassword = bcrypt.hashSync(
       newPassword,
-      parseInt(process.env.BCRYPT_ROUNDS)
+      parseInt(process.env.BCRYPT_ROUNDS),
     );
 
     await account.update({ password: hashPassword });
     res.json(
       responseApi.success({
         message: "updated success",
-      })
+      }),
     );
   } catch (e) {
     res.status(500).json(responseApi.error({ message: e.message }));
@@ -123,13 +124,13 @@ const me = async (req, res) => {
     res.json(
       responseApi.success({
         data: user,
-      })
+      }),
     );
   } catch (err) {
     res.status(500).json(
       responseApi.error({
         message: err.message,
-      })
+      }),
     );
   }
 };
