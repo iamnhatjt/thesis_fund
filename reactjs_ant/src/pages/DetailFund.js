@@ -8,7 +8,6 @@ import { getApi } from "config/networks/axiosConfig";
 import React, { isValidElement } from "react";
 import { Navigate, useLocation, useParams } from "react-router-dom";
 import { FundTag } from "utils/fundStatus";
-import { fundStatus } from "utils/fundStatus";
 import { GpStatus } from "utils/gpStatus";
 import { convertDateTime } from "utils/stringUtils";
 
@@ -61,7 +60,7 @@ export const DetailFund = () => {
       ),
     },
     {
-      title: "Số tiền",
+      title: "Số tiền ($)",
       dataIndex: "money",
       key: "money",
     },

@@ -22,7 +22,10 @@ const isOwnerFund = async (fundId, userId) => {
 };
 
 const isOwnerGP = async (gpId, userId) => {
-  const check = await db.GPCompanyAccount.where({
+  if (userId == 1) {
+    return true;
+  }
+  const check = await db.GPCompanyAccount.findOne({
     GpCompanyId: gpId,
     AccountId: userId,
     role: "admin",

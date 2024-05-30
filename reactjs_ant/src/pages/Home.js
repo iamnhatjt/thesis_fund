@@ -17,6 +17,7 @@ import { Iconify } from "utils/Iconify";
 import AntCard from "components/AntCard";
 import card from "../assets/images/info-card-1.jpg";
 import { timelineList } from "utils/HomeData";
+import TradingView from "components/TraddingView";
 const { Title, Paragraph, Text } = Typography;
 export default function Home() {
   const [reverse, setReverse] = useState(false);
@@ -71,6 +72,11 @@ export default function Home() {
               </Col>
             );
           })}
+        </Row>
+        <Row>
+          <Col xs={24}>
+            <TradingView />
+          </Col>
         </Row>
         <Row gutter={[24, 0]}>
           <AntCard xl={10}>

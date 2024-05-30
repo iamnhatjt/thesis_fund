@@ -16,7 +16,7 @@ const getAllDocs = async (req, res) => {
     res.json(
       responseApi.success({
         data: dbDoc,
-      })
+      }),
     );
   } catch (err) {
     res.status(500).json(responseApi.error({ message: err.message }));
@@ -65,13 +65,13 @@ const createDoc = async (req, res) => {
             res.json(
               responseApi.success({
                 data: doc,
-              })
+              }),
             );
           })
           .catch((err) => {
             throw new Error(err);
           });
-      }
+      },
     );
   } catch (err) {
     res.status(500).json(responseApi.error({ message: err.message }));
@@ -97,9 +97,9 @@ const docFile = async (req, res) => {
         res.json(
           responseApi.success({
             data: file,
-          })
+          }),
         );
-      }
+      },
     );
   } catch (err) {
     res.status(500).json(responseApi.error({ message: err.message }));
@@ -118,7 +118,7 @@ const updateDoc = async (req, res) => {
     res.json(
       responseApi.success({
         data: docDb,
-      })
+      }),
     );
   } catch (err) {
     res.status(500).json(responseApi.error({ message: err.message }));
