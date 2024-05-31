@@ -18,6 +18,8 @@ import { FundTag } from "utils/fundStatus";
 import { FundProviderDialog } from "components/dialogs/FundProviderDialog";
 import { useNavigate } from "react-router-dom";
 import { DocInfoDialog } from "components/dialogs/DocInfo";
+import EditorDialog from "components/dialogs/EditorDialog";
+import { formFundRegister } from "utils/fom";
 
 export const ListFund = () => {
   const navigate = useNavigate();
@@ -28,6 +30,7 @@ export const ListFund = () => {
   const [reload, setReload] = React.useState(0);
   const [isOpenFundProvider, setIsOpenFundProvider] = React.useState(false);
   const [isOpenDialogExtract, setIsOpenDialogExtract] = React.useState(false);
+  const [isOpenDialogEditor, setIsOpenDialogEditor] = React.useState(false);
   const [isDialogDoc, setIsOpenDialogDoc] = React.useState(false);
 
   const handleReload = () => setReload((reload) => reload + 1);
@@ -133,6 +136,9 @@ export const ListFund = () => {
         <Row justify="space-between">
           <Col span={6}>
             <h4>Danh sách quỹ</h4>
+            <Button type="primary" onClick={() => setIsOpenDialogEditor(true)}>
+              Form đăng ký quỹ
+            </Button>
           </Col>
 
           <Col span={12} offset={4}>
@@ -206,6 +212,13 @@ export const ListFund = () => {
             setIsOpenDialogDoc(false);
           }}
           detail={detailFund}
+        />
+      )}
+
+      {isOpenDialogEditor && (
+        <EditorDialog
+          visible={isOpenDialogEditor}
+          onClose={() => setIsOpenDialogEditor(false)}
         />
       )}
     </>
