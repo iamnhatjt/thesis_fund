@@ -30,12 +30,14 @@ import { debounce } from "utils/other";
 import GPStatus from "components/gpcompany/GPStatus";
 import { useNavigate } from "react-router-dom";
 import { DocInfoDialog } from "components/dialogs/DocInfo";
+import EditorDialog from "components/dialogs/EditorDialog";
 
 export const ListGpCompany = () => {
   const [listGPCompanies, setListGPCompanies] = React.useState([]);
   const [isOpenDialogGPCompany, setIsOpenDialogGPCompany] =
     React.useState(false);
   const [isDialogDoc, setIsOpenDialogDoc] = React.useState(false);
+  const [isEditorDialog, setIsEditorDialog] = React.useState(false);
   const [reload, setReload] = React.useState(0);
   const [DetailGPCompany, setDetailGPCompany] = React.useState(null);
   const [searchText, setSearchText] = React.useState("");
@@ -172,6 +174,10 @@ export const ListGpCompany = () => {
     },
   ];
 
+  const openEditorDialog = () => {
+    setIsEditorDialog(true);
+  };
+
   return (
     <>
       {/* <GPStatus /> */}
@@ -179,6 +185,9 @@ export const ListGpCompany = () => {
         <Row justify="space-between">
           <Col span={6}>
             <h4>Danh sách công ty</h4>
+            <Button type="primary" onClick={openEditorDialog}>
+              Form Đăng ký
+            </Button>
           </Col>
 
           <Col span={12} offset={4}>
@@ -236,6 +245,12 @@ export const ListGpCompany = () => {
             setIsOpenDialogDoc(false);
           }}
           detail={DetailGPCompany}
+        />
+      )}
+      {isEditorDialog && (
+        <EditorDialog
+          visible={isEditorDialog}
+          onClose={() => setIsEditorDialog(false)}
         />
       )}
     </>

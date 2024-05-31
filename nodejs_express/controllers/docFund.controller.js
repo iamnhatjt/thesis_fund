@@ -127,11 +127,12 @@ const updateDoc = async (req, res) => {
 
 const deleteDoc = async (req, res) => {
   try {
-    const userId = req?.userInfo?.docId;
-    const docDb = await db.fundDoc.findByPk(req.params.docId);
+    const userId = req?.userInfo?.id;
+    const docDb = await db.docFund.findByPk(req.params.docId);
     const driver = await driverConfig();
 
     const isOwner = await isOwnerFund(docDb.FundId, userId);
+    console.log(isOwner, docDb.FundId, req.userInfo);
     if (!isOwner) {
       throw new Error("should be owner of gp to do this...");
     }

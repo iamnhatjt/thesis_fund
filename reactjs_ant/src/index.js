@@ -8,6 +8,7 @@ import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
 import { AuthSetting } from "config/layoutSetting/authSetting";
+import "./editor.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
