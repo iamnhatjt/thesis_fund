@@ -40,19 +40,6 @@ const EditorDialog = ({ visible, onClose, defaultValue }) => {
     window.print();
     body.style.visibility = "visible";
     pdfView.style.visibility = "visible";
-
-    // const pdfDownLoadNode = document.getElementsByClassName("editor-inner")[0];
-    // if (pdfDownLoadNode) {
-    //   html2canvas(pdfDownLoadNode)
-    //     .then((canvas) => {
-    //       const imageData = canvas.toDataURL("image/png");
-    //       const pdf = new jsPDF();
-    //       pdf.addImage(imageData, "JPEG", 210, 297);
-    //       const success = pdf.save("Form-dang-ky-quy.pdf");
-    //       if (success) successNotification("Đã tải về");
-    //     })
-    //     .catch(errorResponse);
-    // }
   };
 
   const editorConfig = {

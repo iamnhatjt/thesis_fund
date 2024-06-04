@@ -185,9 +185,9 @@ export const ListGpCompany = () => {
         <Row justify="space-between">
           <Col span={6}>
             <h4>Danh sách công ty</h4>
-            <Button type="primary" onClick={openEditorDialog}>
+            {/* <Button type="primary" onClick={openEditorDialog}>
               Form Đăng ký
-            </Button>
+            </Button> */}
           </Col>
 
           <Col span={12} offset={4}>
